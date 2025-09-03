@@ -375,8 +375,12 @@ class BotModel(BaseModel):
         ...,
         description="`unshared`, `shared`, or `pinned@xxx` (xxx is a 3-digit integer)",
     )
+    # for read permissions
     allowed_cognito_groups: list[str]
     allowed_cognito_users: list[str]
+    # for write permissions
+    write_allowed_cognito_groups: list[str] = Field(default_factory=list)
+    write_allowed_cognito_users: list[str] = Field(default_factory=list)
     # LSI-1 SK (StarredIndex)
     is_starred: bool
 
@@ -427,6 +431,10 @@ class BotModel(BaseModel):
             if self.allowed_cognito_groups or self.allowed_cognito_users:
                 raise ValueError(
                     "allowed_cognito_groups and allowed_cognito_users must be empty when shared_scope is 'private'."
+                )
+            if self.write_allowed_cognito_groups or self.write_allowed_cognito_users:
+                raise ValueError(
+                    "write_allowed_cognito_groups and write_allowed_cognito_users must be empty when shared_scope is 'private'."
                 )
         elif self.shared_scope == "partial":
             if self.shared_status == "unshared":
@@ -497,14 +505,27 @@ class BotModel(BaseModel):
         return any(group in self.allowed_cognito_groups for group in user_groups)
 
     def is_editable_by_user(self, user: User) -> bool:
-        """Check if the bot is editable by the user. This is used for updating and deleting the bot."""
+        """Check if the bot is editable by the user. This is used for updating the bot."""
         if user.is_admin():
             return True
 
         if self.is_owned_by_user(user):
             return True
 
-        return False
+        # Check write permissions
+        if user.id in self.write_allowed_cognito_users:
+            return True
+
+        # Check if the user is in the write allowed Cognito groups
+        user_groups = get_user_cognito_groups(user)
+        return any(group in self.write_allowed_cognito_groups for group in user_groups)
+
+    def is_deletable_by_user(self, user: User) -> bool:
+        """Check if the bot is deletable by the user. Only owner and admin can delete."""
+        if user.is_admin():
+            return True
+
+        return self.is_owned_by_user(user)
 
     def is_owned_by_user(self, user: User) -> bool:
         """Check if the bot is owned by the user."""
@@ -545,6 +566,8 @@ class BotModel(BaseModel):
             shared_status="unshared",
             allowed_cognito_groups=[],
             allowed_cognito_users=[],
+            write_allowed_cognito_groups=[],
+            write_allowed_cognito_users=[],
             is_starred=False,
             generation_params=GenerationParamsModel.model_validate(
                 (
@@ -617,6 +640,8 @@ class BotModel(BaseModel):
             shared_status=self.shared_status,
             allowed_cognito_groups=self.allowed_cognito_groups,
             allowed_cognito_users=self.allowed_cognito_users,
+            write_allowed_cognito_groups=self.write_allowed_cognito_groups,
+            write_allowed_cognito_users=self.write_allowed_cognito_users,
             owner_user_id=self.owner_user_id,
             is_publication=self.published_api_codebuild_id is not None,
             generation_params=GenerationParams.model_validate(

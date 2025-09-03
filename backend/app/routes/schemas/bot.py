@@ -380,6 +380,8 @@ class BotOutput(BaseSchema):
     shared_status: str
     allowed_cognito_groups: list[str]
     allowed_cognito_users: list[str]
+    write_allowed_cognito_groups: list[str] = Field(default_factory=list)
+    write_allowed_cognito_users: list[str] = Field(default_factory=list)
     owner_user_id: str
     is_publication: bool
     generation_params: GenerationParams
@@ -443,6 +445,8 @@ class PartialVisibilityInput(BaseSchema):
     target_shared_scope: Literal["partial"]
     target_allowed_user_ids: list[str]
     target_allowed_group_ids: list[str]
+    target_write_allowed_user_ids: list[str] = Field(default_factory=list)
+    target_write_allowed_group_ids: list[str] = Field(default_factory=list)
 
     # @model_validator(mode="after")
     # def validate_not_both_empty(self) -> Self:

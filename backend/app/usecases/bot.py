@@ -516,12 +516,20 @@ def modify_bot_visibility(
     if _is_private_visibility_input(visibility_input):
         target_allowed_user_ids = []
         target_allowed_group_ids = []
+        target_write_allowed_user_ids: list[str] = []
+        target_write_allowed_group_ids: list[str] = []
     elif _is_partial_visibility_input(visibility_input) or _is_all_visibility_input(
         visibility_input
     ):
         if _is_partial_visibility_input(visibility_input):
             target_allowed_user_ids = visibility_input.target_allowed_user_ids
             target_allowed_group_ids = visibility_input.target_allowed_group_ids
+            target_write_allowed_user_ids = getattr(
+                visibility_input, "target_write_allowed_user_ids", []
+            )
+            target_write_allowed_group_ids = getattr(
+                visibility_input, "target_write_allowed_group_ids", []
+            )
 
             # Note: If the specified user or group ID is not found, an error should be thrown.
             # However, the current implementation does not check this because Frontend will care about it.
@@ -529,6 +537,8 @@ def modify_bot_visibility(
             # If to all, clear the allowed user and group IDs.
             target_allowed_user_ids = []
             target_allowed_group_ids = []
+            target_write_allowed_user_ids = []
+            target_write_allowed_group_ids = []
 
         if bot.shared_status != "unshared":
             # If the bot is shared, keep the shared status.
@@ -546,6 +556,8 @@ def modify_bot_visibility(
         target_shared_status,
         target_allowed_user_ids,
         target_allowed_group_ids,
+        target_write_allowed_user_ids,
+        target_write_allowed_group_ids,
     )
 
 
@@ -577,6 +589,8 @@ def modify_pinning_status(bot_id: str, push_input: PushBotInput):
         shared_status,
         bot.allowed_cognito_users,
         bot.allowed_cognito_groups,
+        bot.write_allowed_cognito_users,
+        bot.write_allowed_cognito_groups,
     )
 
 

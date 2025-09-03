@@ -7,6 +7,7 @@ from decimal import Decimal as decimal
 from typing import Union
 
 import boto3
+from pydantic import Field
 from app.config import DEFAULT_GENERATION_CONFIG
 from app.repositories.common import (
     TRANSACTION_BATCH_READ_SIZE,
@@ -68,6 +69,8 @@ def store_bot(custom_bot: BotModel):
         "SharedStatus": custom_bot.shared_status,
         "AllowedCognitoGroups": custom_bot.allowed_cognito_groups,
         "AllowedCognitoUsers": custom_bot.allowed_cognito_users,
+        "WriteAllowedCognitoGroups": custom_bot.write_allowed_cognito_groups,
+        "WriteAllowedCognitoUsers": custom_bot.write_allowed_cognito_users,
         "GenerationParams": custom_bot.generation_params.model_dump(),
         "AgentData": custom_bot.agent.model_dump(),
         "Knowledge": custom_bot.knowledge.model_dump(),
@@ -396,16 +399,20 @@ def update_bot_shared_status(
     shared_status: str,
     allowed_user_ids: list[str],
     allowed_group_ids: list[str],
+    write_allowed_user_ids: list[str] | None = None,
+    write_allowed_group_ids: list[str] | None = None,
 ):
     """Update shared status for bot."""
     table = get_bot_table_client()
     logger.info(f"Updating shared status for bot: {bot_id}")
 
-    update_expression = "SET SharedStatus = :shared_status, AllowedCognitoUsers = :allowed_user_ids, AllowedCognitoGroups = :allowed_group_ids"
+    update_expression = "SET SharedStatus = :shared_status, AllowedCognitoUsers = :allowed_user_ids, AllowedCognitoGroups = :allowed_group_ids, WriteAllowedCognitoUsers = :write_allowed_user_ids, WriteAllowedCognitoGroups = :write_allowed_group_ids"
     expression_attribute_values = {
         ":shared_status": shared_status,
         ":allowed_user_ids": allowed_user_ids,
         ":allowed_group_ids": allowed_group_ids,
+        ":write_allowed_user_ids": write_allowed_user_ids or [],
+        ":write_allowed_group_ids": write_allowed_group_ids or [],
     }
 
     if shared_scope != "private":
@@ -693,6 +700,8 @@ def find_bot_by_id(bot_id: str) -> BotModel:
         shared_status=item["SharedStatus"],
         allowed_cognito_groups=item.get("AllowedCognitoGroups", []),
         allowed_cognito_users=item.get("AllowedCognitoUsers", []),
+        write_allowed_cognito_groups=item.get("WriteAllowedCognitoGroups", []),
+        write_allowed_cognito_users=item.get("WriteAllowedCognitoUsers", []),
         # Note: IsStarred is set to False for non-starred bots to use sparse index
         is_starred=item.get("IsStarred", False),
         generation_params=GenerationParamsModel.model_validate(

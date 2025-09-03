@@ -601,7 +601,7 @@ class TestUpdateBotSharedStatus(unittest.TestCase):
         self.assertEqual(bot.shared_scope, "all")
         self.assertEqual(bot.shared_status, "shared")
 
-        # Make partial shared
+        # Make partial shared with only read permissions
         update_bot_shared_status(
             owner_user_id="user1",
             bot_id="1",
@@ -615,6 +615,27 @@ class TestUpdateBotSharedStatus(unittest.TestCase):
         self.assertEqual(bot.shared_status, "shared")
         self.assertEqual(bot.allowed_cognito_groups, ["group1"])
         self.assertEqual(bot.allowed_cognito_users, ["user2"])
+        self.assertEqual(bot.write_allowed_cognito_groups, [])
+        self.assertEqual(bot.write_allowed_cognito_users, [])
+
+        # Make partial shared with edit permissions
+        update_bot_shared_status(
+            owner_user_id="user1",
+            bot_id="1",
+            shared_scope="partial",
+            shared_status="shared",
+            allowed_group_ids=["group1"],
+            allowed_user_ids=["user2"],
+            write_allowed_group_ids=["group1"],
+            write_allowed_user_ids=["user2"],
+        )
+        bot = find_bot_by_id("1")
+        self.assertEqual(bot.shared_scope, "partial")
+        self.assertEqual(bot.shared_status, "shared")
+        self.assertEqual(bot.allowed_cognito_groups, ["group1"])
+        self.assertEqual(bot.allowed_cognito_users, ["user2"])
+        self.assertEqual(bot.write_allowed_cognito_groups, ["group1"])
+        self.assertEqual(bot.write_allowed_cognito_users, ["user2"])
 
 
 class TestRemoveFromRecentlyUsed(unittest.TestCase):
