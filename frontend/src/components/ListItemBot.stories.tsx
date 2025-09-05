@@ -22,8 +22,8 @@ import { formatDatetime } from '../utils/DateUtils';
 const bots: BotListItem[] = [
   {
     id: '1',
-    title: 'Bot 1',
-    description: 'Bot 1',
+    title: 'Bot1',
+    description: 'description',
     createTime: new Date(),
     lastUsedTime: new Date(),
     isStarred: false,
@@ -32,11 +32,12 @@ const bots: BotListItem[] = [
     available: true,
     sharedScope: 'private',
     sharedStatus: '',
+    isEditable: false,
   },
   {
     id: '2',
-    title: 'Bot 2',
-    description: 'Bot 2',
+    title: 'Bot2',
+    description: 'description',
     createTime: new Date(),
     lastUsedTime: new Date(),
     isStarred: true,
@@ -45,11 +46,12 @@ const bots: BotListItem[] = [
     available: true,
     sharedScope: 'private',
     sharedStatus: '',
+    isEditable: true,
   },
   {
     id: '3',
-    title: 'Bot 1 Disabled',
-    description: '',
+    title: 'Bot3',
+    description: 'description',
     createTime: new Date(),
     lastUsedTime: new Date(),
     isStarred: false,
@@ -58,11 +60,12 @@ const bots: BotListItem[] = [
     available: false,
     sharedScope: 'private',
     sharedStatus: '',
+    isEditable: false,
   },
   {
     id: '4',
-    title: 'Bot 2 Disabled',
-    description: '',
+    title: 'Bot4',
+    description: 'description',
     createTime: new Date(),
     lastUsedTime: new Date(),
     isStarred: true,
@@ -71,6 +74,7 @@ const bots: BotListItem[] = [
     available: false,
     sharedScope: 'private',
     sharedStatus: '',
+    isEditable: true,
   },
 ];
 

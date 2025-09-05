@@ -96,6 +96,7 @@ export const DeleteBot = () => {
         syncStatus: 'SUCCEEDED',
         sharedScope: 'private',
         sharedStatus: '',
+        isEditable: true,
       }}
       onDelete={() => {
         setIsOpenDeleteDialog(false);
@@ -238,6 +239,8 @@ export const ShareBot = () => {
   const [sharedScope, setSharedScope] = useState<SharedScope>('private');
   const [allowedUserIds] = useState(['user1', 'user2']);
   const [allowedGroupIds] = useState(['group1']);
+  const [writeAllowedUserIds] = useState(['user1']);
+  const [writeAllowedGroupIds] = useState(['group1']);
 
   return (
     <DialogShareBot
@@ -245,6 +248,8 @@ export const ShareBot = () => {
       botId="1"
       allowedUserIds={allowedUserIds}
       allowedGroupIds={allowedGroupIds}
+      writeAllowedUserIds={writeAllowedUserIds}
+      writeAllowedGroupIds={writeAllowedGroupIds}
       sharedScope={sharedScope}
       onChangeSharedScope={(scope) => {
         setSharedScope(scope);
@@ -266,6 +271,8 @@ export const ShareBotLoading = () => {
       botId="1"
       allowedUserIds={[]}
       allowedGroupIds={[]}
+      writeAllowedUserIds={[]}
+      writeAllowedGroupIds={[]}
       sharedScope="private"
       onChangeSharedScope={() => {}}
       onUpdateAllowedUserAndGroup={() => {}}

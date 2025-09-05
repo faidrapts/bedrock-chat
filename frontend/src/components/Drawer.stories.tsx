@@ -17,8 +17,8 @@ const conversations: ConversationMeta[] = [
 const bots: BotListItem[] = [
   {
     id: '1',
-    title: 'Bot 1',
-    description: 'Bot 1',
+    title: 'Bot1',
+    description: 'description',
     createTime: new Date(),
     lastUsedTime: new Date(),
     isStarred: false,
@@ -27,11 +27,12 @@ const bots: BotListItem[] = [
     available: true,
     sharedScope: 'private',
     sharedStatus: '',
+    isEditable: false,
   },
   {
     id: '2',
-    title: 'Bot 2',
-    description: 'Bot 2',
+    title: 'Bot2',
+    description: 'description',
     createTime: new Date(),
     lastUsedTime: new Date(),
     isStarred: true,
@@ -40,6 +41,7 @@ const bots: BotListItem[] = [
     available: true,
     sharedScope: 'private',
     sharedStatus: '',
+    isEditable: true,
   },
 ];
 
